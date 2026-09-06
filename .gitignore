@@ -1,0 +1,13 @@
+# Mengabaikan file tertentu
+config.json
+/.env
+
+# Mengabaikan folder tertentu
+node_modules/
+upload/
+build/
+
+# Mengabaikan semua file dengan ekstensi tertentu
+*.log
+*.xls
+*.xlsx
