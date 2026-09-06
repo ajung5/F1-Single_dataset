@@ -6,6 +6,7 @@ config.json
 node_modules/
 upload/
 build/
+f1_cache/
 
 # Mengabaikan semua file dengan ekstensi tertentu
 *.log
