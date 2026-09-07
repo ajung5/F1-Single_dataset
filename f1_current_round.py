@@ -26,11 +26,36 @@ for year in range(start_year, end_year + 1):
         print(f"Gagal mengambil jadwal tahun {year}: {e}")
         continue
 
+    # --- PENGECEKAN ROUND TERBARU ---
+    # Ambil waktu saat ini tanpa timezone untuk menyamakan format dengan FastF1
+    current_date = pd.Timestamp.now().tz_localize(None)
+    
+    # Filter jadwal: bukan 'Testing' dan tanggal event sudah terlewati/hari ini
+    past_events = schedule[
+        (~schedule['EventName'].str.contains('Testing', na=False, case=False)) &
+        (pd.to_datetime(schedule['EventDate']).dt.tz_localize(None) <= current_date)
+    ]
+    
+    if past_events.empty:
+        print(f"Belum ada balapan yang berlangsung di tahun {year}.")
+        continue
+        
+    # Dapatkan nomor urut round paling besar (terbaru) dari event yang sudah lewat
+    latest_round = past_events['RoundNumber'].max()
+    print(f"-> Ditemukan Round terbaru: Round {latest_round}")
+    # ---------------------------------
+
     for index, event in schedule.iterrows():
         if 'Testing' in str(event['EventName']):
             continue
             
         round_number = event['RoundNumber']
+        
+        # --- LOMPATI JIKA BUKAN ROUND TERBARU ---
+        if round_number != latest_round:
+            continue
+        # ----------------------------------------
+            
         gp_name = str(event['EventName']).replace(' Grand Prix', '').strip()
         
         if round_number < 1:
@@ -62,7 +87,6 @@ for year in range(start_year, end_year + 1):
                 # --- Cari siapa pencetak Fastest Lap di seluruh sesi ini ---
                 fastest_driver_code = None
                 try:
-                    # Mengambil 1 lap paling cepat dari seluruh pembalap di sesi ini
                     overall_fastest_lap = session.laps.pick_fastest()
                     if overall_fastest_lap is not None:
                         fastest_driver_code = overall_fastest_lap['Driver']
@@ -73,10 +97,8 @@ for year in range(start_year, end_year + 1):
                 for idx, row in results.iterrows():
                     driver_code = row.get('Abbreviation', '')
                     
-                    # Cek apakah pembalap ini yang mencetak lap tercepat (1 jika YA, 0 jika TIDAK)
                     is_fastest_lap = 1 if (fastest_driver_code and driver_code == fastest_driver_code) else 0
 
-                    # Ambil Grid Position
                     grid_pos = row.get('GridPosition', None)
                     if pd.isna(grid_pos) or grid_pos == 0:
                         grid_pos = None
@@ -99,14 +121,14 @@ for year in range(start_year, end_year + 1):
                         'Grid Position': grid_pos,
                         'Finish Position': row.get('Position', None),
                         'Race Points': row.get('Points', 0),
-                        'Fastest Lap': is_fastest_lap  # Berisi 1 atau 0
+                        'Fastest Lap': is_fastest_lap
                     })
             except Exception as e:
                 print(f"  [{year}] Gagal mengambil {race_type} untuk {gp_name}: {e}")
 
 # 4. Simpan Data ke Excel
 df_all_races = pd.DataFrame(all_races_data)
-output_filename = f'F1_All_Races_{start_year}_to_{end_year}.xlsx'
+output_filename = f'F1_Latest_Round_{start_year}_to_{end_year}.xlsx'
 df_all_races.to_excel(output_filename, index=False)
 
 print("\n" + "=" * 50)
