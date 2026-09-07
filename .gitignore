@@ -1,5 +1,6 @@
 # Mengabaikan file tertentu
 config.json
+google_credentials.json
 /.env
 
 # Mengabaikan folder tertentu
