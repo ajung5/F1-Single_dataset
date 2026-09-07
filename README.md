@@ -36,8 +36,9 @@ f1-historical-data/
 
 ```
 
-####### 🚀 Prasyarat & Instalasi #######
-Kloning Repositori:
+
+## 🚀 Prasyarat & Instalasi #######
+* Kloning Repositori:
 ```Bash
 git clone [https://github.com/username-anda/f1-historical-data.git](https://github.com/username-anda/f1-historical-data.git)
 cd f1-historical-data
@@ -60,27 +61,28 @@ Salin file .env.example menjadi .env dan sesuaikan konfigurasinya (koneksi datab
 cp .env.example .env
 ```
 
-💻 Cara Penggunaan
-1. Melakukan Seeding Data Awal (ETL)
+
+## 💻 Cara Penggunaan
+* Melakukan Seeding Data Awal (ETL)
 Untuk mengunduh dan menyinkronkan data historis awal ke database lokal Anda, jalankan skrip seeder:
 ```Bash
 python scripts/seed_data.py
 ```
-2. Menjalankan REST API Server
+* Menjalankan REST API Server
 Jalankan server pengembangan FastAPI menggunakan Uvicorn:
-
-Bash
+```Bash
 uvicorn src.api.app:app --reload
-API sekarang dapat diakses di http://127.0.0.1:8000. Anda dapat melihat dokumentasi API interaktif (Swagger UI) di http://127.0.0.1:8000/docs.
+```
+API sekarang dapat diakses di http://127.0.0.1:8000.
+Anda dapat melihat dokumentasi API interaktif (Swagger UI) di http://127.0.0.1:8000/docs.
 
-📡 Contoh Endpoint API
+* 📡 Contoh Endpoint API
+```Bash
 GET /api/v1/drivers/{driver_id} - Mendapatkan profil dan statistik karir pembalap (misal: max_verstappen).
-
 GET /api/v1/teams/{team_id}/history - Mendapatkan riwayat tim dan pemasok mesin.
-
 GET /api/v1/races?year=2023&round=1 - Mendapatkan hasil balapan spesifik.
-
 GET /api/v1/compare/drivers?d1=hamilton&d2=alonso - Membandingkan statistik head-to-head dua pembalap.
+```
 
 🤝 Kontribusi
 Kontribusi selalu dipersilakan! Silakan buat Pull Request atau buka Issue untuk mendiskusikan perubahan, penambahan fitur, atau perbaikan bug.
