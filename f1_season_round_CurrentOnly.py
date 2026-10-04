@@ -247,16 +247,7 @@ df_all_races = pd.DataFrame(all_races_data, columns=OUTPUT_COLUMNS)
 
 
 # =========================================================
-# 7. SIMPAN KE EXCEL
-# =========================================================
-
-output_filename = f"F1_{TARGET_SEASON}_Round_{TARGET_ROUND}.xlsx"
-
-df_all_races.to_excel(output_filename, index=False)
-
-
-# =========================================================
-# 8. INFORMASI OUTPUT
+# 7. CEK DATA & SIMPAN KE EXCEL
 # =========================================================
 
 print()
@@ -265,8 +256,13 @@ print("=" * 60)
 if df_all_races.empty:
 
     print("Tidak ada data balapan yang berhasil diambil.")
+    print("File Excel tidak dibuat.")
 
 else:
+
+    output_filename = f"F1_{TARGET_SEASON}_Round_{TARGET_ROUND}.xlsx"
+
+    df_all_races.to_excel(output_filename, index=False)
 
     print(f"Total data : " f"{len(df_all_races)} baris")
 
@@ -275,7 +271,7 @@ else:
 
     print(df_all_races["Race Type"].value_counts())
 
-print()
-print(f"File output: {output_filename}")
+    print()
+    print(f"File output: {output_filename}")
 
 print("=" * 60)
