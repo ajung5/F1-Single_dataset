@@ -6,8 +6,8 @@ import fastf1
 # KONFIGURASI
 # =========================================================
 
-TARGET_SEASON = 2017
-TARGET_ROUND = 21
+TARGET_SEASON = 2026
+TARGET_ROUND = 17
 
 CACHE_DIR = "f1_cache"
 
