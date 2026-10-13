@@ -14,7 +14,6 @@ import fastf1
 import pandas as pd
 import requests
 
-
 # =========================================================
 # 1. KONFIGURASI
 # =========================================================
@@ -127,12 +126,7 @@ def get_circuit_name(season, round_number):
     try:
         response = requests.get(url, timeout=8)
         response.raise_for_status()
-        circuits = (
-            response.json()
-            .get("MRData", {})
-            .get("CircuitTable", {})
-            .get("Circuits", [])
-        )
+        circuits = response.json().get("MRData", {}).get("CircuitTable", {}).get("Circuits", [])
         return str(circuits[0].get("circuitName", "")) if circuits else ""
     except (requests.RequestException, ValueError, TypeError, KeyError) as exc:
         print(f"  Peringatan: nama sirkuit tidak dapat diambil: {exc}")
@@ -155,10 +149,7 @@ def get_event_info(event, season, round_number):
 
 def has_sprint(event):
     """Cek sesi bernama Sprint, bukan Sprint Qualifying saja."""
-    return any(
-        str(event.get(f"Session{i}", "")).strip().lower() == "sprint"
-        for i in range(1, 6)
-    )
+    return any(str(event.get(f"Session{i}", "")).strip().lower() == "sprint" for i in range(1, 6))
 
 
 def get_team_results(season, round_number, session_code, race_type, event_info):
@@ -203,14 +194,16 @@ def get_team_results(season, round_number, session_code, race_type, event_info):
         for _, team in team_points.iterrows():
             team_name = team["TeamName"]
             team_initial, engine = get_team_metadata(team_name, season)
-            rows.append({
-                **event_info,
-                "Race Type": race_type,
-                "Team Name": team_name,
-                "Team Initial": team_initial,
-                "Engine Manufacture": engine,
-                "Race Points": float(team["Points"]),
-            })
+            rows.append(
+                {
+                    **event_info,
+                    "Race Type": race_type,
+                    "Team Name": team_name,
+                    "Team Initial": team_initial,
+                    "Engine Manufacture": engine,
+                    "Race Points": float(team["Points"]),
+                }
+            )
             if engine == "Unknown":
                 print(f"  Peringatan: pemasok mesin '{team_name}' musim {season} belum dipetakan.")
 
@@ -238,9 +231,7 @@ def main():
 
     try:
         schedule = fastf1.get_event_schedule(TARGET_SEASON)
-        matches = schedule.loc[
-            pd.to_numeric(schedule["RoundNumber"], errors="coerce") == TARGET_ROUND
-        ]
+        matches = schedule.loc[pd.to_numeric(schedule["RoundNumber"], errors="coerce") == TARGET_ROUND]
     except Exception as exc:
         print(f"Gagal mengambil jadwal: {exc}")
         print("File Excel tidak dibuat.")
@@ -263,11 +254,7 @@ def main():
 
     all_team_data = []
     for session_code, race_type in sessions:
-        all_team_data.extend(
-            get_team_results(
-                TARGET_SEASON, TARGET_ROUND, session_code, race_type, event_info
-            )
-        )
+        all_team_data.extend(get_team_results(TARGET_SEASON, TARGET_ROUND, session_code, race_type, event_info))
 
     df = pd.DataFrame(all_team_data, columns=OUTPUT_COLUMNS)
 
